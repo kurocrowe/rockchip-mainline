@@ -567,27 +567,32 @@
 		reset-names = "saradc-apb";
 		status = "disabled";
 	};
-
-	gpu: gpu@ff300000 {
-		compatible = "rockchip,rk3328-mali", "arm,mali-450";
-		reg = <0x0 0xff300000 0x0 0x40000>;
-		interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>,
-			     <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>,
-			     <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
-			     <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>,
-			     <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>,
-			     <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>,
-			     <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
-		interrupt-names = "gp",
-				  "gpmmu",
-				  "pp",
-				  "pp0",
-				  "ppmmu0",
-				  "pp1",
-				  "ppmmu1";
-		clocks = <&cru ACLK_GPU>, <&cru ACLK_GPU>;
-		clock-names = "bus", "core";
-		resets = <&cru SRST_GPU_A>;
+	
+	gpu: gpu @ffa30000 {
+		compatible = "arm,malit764",
+				"arm,malit76x",
+				"arm,malit7xx",
+				"arm,mali-midgard";
+		reg = <0xffa30000 0x10000>;
+		interrupts = <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "JOB", "MMU", "GPU";
+		clocks = <&cru ACLK_GPU>;
+		clock-names = "clk_mali";
+		operating-points = <
+			/* KHz uV */
+			600000 1250000
+			/* 500000 1200000 - See crosbug.com/p/33857 */
+			400000 1100000
+			300000 1000000
+			200000 950000
+			100000 950000
+		>;
+		#cooling-cells = <2>; /* min followed by max */
+		power-domains = <&power RK3288_PD_GPU>;
+		status = "okay";
+		mali-supply = <&vdd_gpu>;
 	};
 
 	h265e_mmu: iommu@ff330200 {
